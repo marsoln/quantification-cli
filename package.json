@@ -1,0 +1,45 @@
+{
+  "name": "quantification-cli",
+  "version": "0.0.2",
+  "description": "量化交易命令行工具",
+  "main": "./dist/cli.js",
+  "bin": {
+    "qtf-cli": "./dist/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marsoln/quantification-cli.git"
+  },
+  "scripts": {
+    "prepublish": "npm run build",
+    "build": "rimraf dist & tsc & chmod +x ./dist/cli.js",
+    "test": "ts-node ./cli"
+  },
+  "author": "marsoln1988@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marsoln/quantification-cli/issues"
+  },
+  "homepage": "https://github.com/marsoln/quantification-cli#readme",
+  "dependencies": {
+    "async-task-manager": "^1.1.0",
+    "chalk": "^3.0.0",
+    "commander": "^4.1.1",
+    "crypto-js": "^4.0.0",
+    "inquirer": "^7.0.4",
+    "moment": "^2.24.0",
+    "node-fetch": "^2.6.0",
+    "rimraf": "^3.0.2",
+    "semver": "^7.1.3",
+    "typescript": "^3.8.2"
+  },
+  "devDependencies": {
+    "@types/chalk": "^2.2.0",
+    "@types/crypto-js": "^3.1.43",
+    "@types/inquirer": "^6.5.0",
+    "@types/moment": "^2.13.0",
+    "@types/node": "^13.7.4",
+    "@types/node-fetch": "^2.5.4",
+    "@types/semver": "^7.1.0"
+  }
+}

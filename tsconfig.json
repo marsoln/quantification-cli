@@ -1,0 +1,14 @@
+{
+  "include": ["src/**/*"],
+  "files": ["cli.ts"],
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "./dist",
+    "sourceMap": true,
+    "declarationMap": true,
+    "resolveJsonModule": true,
+    "downlevelIteration": true
+  },
+  "exclude": ["node_modules", "dist"]
+}

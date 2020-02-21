@@ -1,0 +1,13 @@
+.editorconfig
+
+node_modules/
+
+.git/
+.gitignore
+.prettierrc
+
+tsconfig.json
+
+src/
+
+cli.ts

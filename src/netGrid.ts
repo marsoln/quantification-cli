@@ -4,18 +4,19 @@ import { SerialQueue } from 'async-task-manager'
 import getHuobiApis from './providers/huobiApi'
 
 let defaultVals = {
-  price: 4.55,
+  price: 3.68,
   amount: 100,
-  rate: 50,
-  stages: 10,
-  minimun: 2,
+  rate: 35,
+  stages: 14,
+  min: 2,
   symbol: '',
   appKey: '',
   appSecret: '',
   skip: 0,
+  trim: 0,
 }
 
-async function exec() {
+export default async function() {
   const data = []
 
   const {
@@ -23,7 +24,7 @@ async function exec() {
     amountStart,
     growthRate,
     stages,
-    priceMinimum,
+    min,
   } = await createPromptModule()([
     {
       type: 'input',
@@ -44,7 +45,6 @@ async function exec() {
       name: 'growthRate',
       message: '输入数量增长率(%)',
       default: defaultVals.rate,
-      validate: v => +v > 0,
     },
     {
       type: 'input',
@@ -55,9 +55,9 @@ async function exec() {
     },
     {
       type: 'input',
-      name: 'priceMinimum',
-      message: '最低价格限制?',
-      default: defaultVals.minimun,
+      name: 'min',
+      message: '最小限制?',
+      default: defaultVals.min,
     },
   ])
 
@@ -66,32 +66,38 @@ async function exec() {
     defaultVals.amount = +amountStart
     defaultVals.rate = +growthRate
     defaultVals.stages = +stages
-    defaultVals.minimun = +priceMinimum
+    defaultVals.min = +min
 
     let amountTotal = 0
     let costTotal = 0
     let amount = +amountStart
     let price = +priceStart
-    const priceBaseDiffPerStage = (+priceStart - priceMinimum) / stages
+    const priceBaseDiffPerStage = (+priceStart - min) / stages
     for (let index = 0; index < stages; index++) {
       amountTotal += amount
-      let cost = amount * price
+      const cost = amount * price
       costTotal += cost
+      const priceDiff =
+        (+growthRate > 0
+          ? Math.pow(Math.cos(((index / stages) * Math.PI) / 4), 3) +
+            stages / growthRate
+          : 1) * priceBaseDiffPerStage
       data.push({
-        price: price.toFixed(2),
-        amount: amount.toFixed(2),
-        cost: cost.toFixed(2),
-        priceAvg: (costTotal / amountTotal).toFixed(2),
-        amountTotal: amountTotal.toFixed(2),
-        costTotal: costTotal.toFixed(2),
+        price: price.fmt(),
+        priceDiff: priceDiff.fmt(),
+        amount: amount.fmt(),
+        cost: cost.fmt(),
+        priceAvg: (costTotal / amountTotal).fmt(),
+        amountTotal: amountTotal.fmt(),
+        costTotal: costTotal.fmt(),
       })
       // 下次购买的数量
       amount *= 1 + +growthRate / 100
       // 下次购买的价格
-      price -=
-        (Math.sqrt(Math.cos((((1 + index / 2) / stages) * Math.PI) / 4)) +
-          0.1) *
-        priceBaseDiffPerStage
+      price -= priceDiff
+      if (price <= min) {
+        break
+      }
     }
   } else {
     console.warn(`输入参数错误 ❌`)
@@ -106,13 +112,19 @@ async function exec() {
       {
         type: 'confirm',
         name: 'purchase',
-        message: '是否下单?',
+        message: '是否下单(目前只支持 huobi 平台)?',
         default: false,
       },
     ])
 
     if (purchase) {
-      const { symbol, appKey, appSecret, skip } = await createPromptModule()([
+      const {
+        symbol,
+        appKey,
+        appSecret,
+        skip = 0,
+        trim = 0,
+      } = await createPromptModule()([
         {
           type: 'input',
           name: 'symbol',
@@ -137,38 +149,43 @@ async function exec() {
         {
           type: 'input',
           name: 'skip',
-          message: '跳过前若干笔订单？',
+          message: '跳过起始若干笔订单？',
           default: defaultVals.skip,
           validate: v => +v >= 0,
         },
+        {
+          type: 'input',
+          name: 'trim',
+          message: '跳过结尾若干笔订单？',
+          default: defaultVals.trim,
+          validate: v => +v >= 0,
+        },
       ])
-      defaultVals = { ...defaultVals, symbol, appKey, appSecret, skip }
+      defaultVals = { ...defaultVals, symbol, appKey, appSecret, skip, trim }
       const huobiClient = getHuobiApis(appKey, appSecret)
       const queue = new SerialQueue({ abortAfterFail: false, toleration: 0 })
-      data
+      const orderData = data
         .slice(+skip)
-        // 反过来下单 价格高的最后下单 这样在平台优先展示
         .reverse()
-        .forEach(({ price, amount }) =>
+        .slice(+trim)
+
+      console.table(orderData)
+
+      const result = await createPromptModule()([
+        {
+          type: 'confirm',
+          name: 'continue',
+          message: '确定下单?',
+          default: true,
+        },
+      ])
+
+      if (result.continue) {
+        orderData.forEach(({ price, amount }) =>
           queue.add(() => huobiClient.buy_limit(symbol, amount, price)),
         )
-      await queue.consume().catch(err => console.log(`下单失败`, err))
+        await queue.consume().catch(err => console.log(`下单失败`, err))
+      }
     }
   }
-}
-
-export default async function() {
-  do {
-    await exec()
-  } while (
-    await createPromptModule()([
-      {
-        type: 'confirm',
-        name: 'continue',
-        message: '继续?',
-        default: true,
-      },
-    ]).then(t => t.continue)
-  )
-  process.exit(0)
 }

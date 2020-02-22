@@ -90,8 +90,7 @@ const getHuoBiApis = (access_key: string, access_secret: string) => {
       accountId = data.filter((t: any) => t.type === 'spot')[0].id
     })
     .catch(err => {
-      error(`初始化火币账户信息失败:${err.message}\n进程退出...`)
-      process.exit(-1)
+      error(`初始化火币账户信息失败:${err.message}`)
     })
 
   const sendGetRequest = (path: string | Function, params?: any) =>

@@ -7,8 +7,8 @@
 ## 使用
 
 - 查看版本号 `qtf-cli -v`
-
-- 检查升级 `qtf-cli update`
-- 计算市值盈利比 `qtf-cli pe`
-- 计算网格逐仓 `qtf-cli grid`
-- 计算套利 `qtf-cli arb`
+- 启动程序 `qtf-cli`
+  - 检查更新
+  - 回购模型价格变动
+  - 网格下单策略
+  - 期货套利计算

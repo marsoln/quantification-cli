@@ -36,6 +36,4 @@ export default async function() {
   } else {
     console.warn(`参数错误 ❌`)
   }
-
-  process.exit(0)
 }

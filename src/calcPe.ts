@@ -44,7 +44,7 @@ export default async function() {
       type: 'input',
       name: 'valueGrowthOfYear',
       message: '每年市值增速(%)',
-      default: 0,
+      default: 5,
     },
     {
       type: 'list',
@@ -117,6 +117,4 @@ export default async function() {
   } else {
     console.warn(`参数错误 ❌`)
   }
-
-  process.exit(0)
 }

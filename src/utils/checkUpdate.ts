@@ -6,7 +6,7 @@ import getVersions from './getVersions'
 export default async function checkUpdate() {
   const { current, latest } = await getVersions()
 
-  let title = chalk.bold.blue(`Svc CLI v${current}`)
+  let title = chalk.bold.blue(`cli version: ${current}`)
   const shouldUpdate = semver.gt(latest, current)
   if (shouldUpdate) {
     title += chalk.green(`

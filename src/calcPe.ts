@@ -7,13 +7,14 @@ export default async function() {
     amountLeft,
     incomeBuybackRatio,
     buybackTimesOfYear,
+    valueGrowthOfYear,
     displayPeriod,
   } = await createPromptModule()([
     {
       type: 'input',
       name: 'priceBuyBackAvg',
       message: '输入回购平均价格',
-      default: 4,
+      default: 3,
     },
     {
       type: 'input',
@@ -40,6 +41,12 @@ export default async function() {
       default: 12,
     },
     {
+      type: 'input',
+      name: 'valueGrowthOfYear',
+      message: '每年市值增速(%)',
+      default: 0,
+    },
+    {
       type: 'list',
       name: 'displayPeriod',
       message: '按年/月展示？',
@@ -49,19 +56,12 @@ export default async function() {
   ])
 
   if (priceBuyBackAvg && amountBuyback && amountLeft) {
-    // 市值
-    const MarketValue = priceBuyBackAvg * +amountLeft
-
     // 回购金额
     const buybackCostPerYear =
       priceBuyBackAvg * amountBuyback * buybackTimesOfYear
 
-    // 市值盈利比
-    const PE = +(
-      MarketValue /
-      (buybackCostPerYear / incomeBuybackRatio)
-    ).toFixed(2)
-
+    // 市值
+    let MarketValue = priceBuyBackAvg * +amountLeft
     let futureAmountLeft = +amountLeft
     let futureAmountBuyback = +amountBuyback
 
@@ -74,6 +74,8 @@ export default async function() {
         futureAmountBuyback = buybackCostPerYear / reasonablePrice
         futureBuybacksByYears.push({
           ['Year']: counter,
+          ['MarketValue']: MarketValue.fmt(),
+          ['PE']: (MarketValue / buybackCostPerYear / incomeBuybackRatio).fmt(),
           ['BuypackPrice']: reasonablePrice.fmt(),
           ['BuybackAmount']: futureAmountBuyback.fmt(),
           ['MarketTotal']: futureAmountLeft.fmt(),
@@ -81,7 +83,8 @@ export default async function() {
             ((reasonablePrice / priceBuyBackAvg - 1) * 100).fmt() + '%',
         })
         futureAmountLeft -= futureAmountBuyback
-      } while (++counter && futureAmountLeft > 1000) // 剩余小于 1000 万时退出
+        MarketValue *= 1 + +valueGrowthOfYear / 100
+      } while (++counter && futureAmountLeft > 1000 && counter <= 50)
       console.table(futureBuybacksByYears)
     } else {
       const futureBuybacksByMonths = {}
@@ -98,23 +101,19 @@ export default async function() {
         futureBuybacksByMonths[year].push({
           ['Year']: year,
           ['PeriodOfYear']: (counter % buybackTimesOfYear) + 1,
+          ['MarketValue']: MarketValue.fmt(),
+          ['PE']: (MarketValue / buybackCostPerYear / incomeBuybackRatio).fmt(),
           ['BuypackPrice']: reasonablePrice.fmt(),
           ['BuybackAmount']: futureAmountBuyback.fmt(),
           ['MarketTotal']: futureAmountLeft.fmt(),
           ['PriceRiseRatio']:
             ((reasonablePrice / priceBuyBackAvg - 1) * 100).fmt() + '%',
         })
+        MarketValue *= 1 + +valueGrowthOfYear / 100 / buybackTimesOfYear
         futureAmountLeft -= futureAmountBuyback
-      } while (++counter && futureAmountLeft > 1000) // 剩余小于 1000 万时退出
+      } while (++counter && futureAmountLeft > 1000 && counter <= 50) // 剩余小于 1000 万时退出
       Object.values(futureBuybacksByMonths).forEach(data => console.table(data))
     }
-
-    console.table([
-      {
-        ['MarketValue']: MarketValue.fmt(),
-        ['PE']: PE.fmt(),
-      },
-    ])
   } else {
     console.warn(`参数错误 ❌`)
   }

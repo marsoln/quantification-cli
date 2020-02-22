@@ -128,9 +128,9 @@ async function exec() {
           validate: v => !!v,
         },
         {
-          type: 'input',
+          type: 'password',
           name: 'appSecret',
-          message: '输入 appSecret',
+          message: '输入 AppSecret',
           default: defaultVals.appSecret,
           validate: v => !!v,
         },

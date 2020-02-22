@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import './src/utils/polyfill'
+
 import * as chalk from 'chalk'
 import * as program from 'commander'
 
@@ -8,6 +10,7 @@ import { version } from './package.json'
 import update from './src/update'
 import calcPe from './src/calcPe'
 import netGrid from './src/netGrid'
+import arbitrage from './src/arbitrage'
 
 program.version(version).usage('<command> [options]')
 
@@ -25,6 +28,11 @@ program
   .command('grid')
   .description('计算网格逐仓')
   .action(netGrid)
+
+program
+  .command('arb')
+  .description('计算套利')
+  .action(arbitrage)
 
 program.arguments('<command>').action(cmd => {
   program.outputHelp()

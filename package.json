@@ -1,6 +1,6 @@
 {
   "name": "quantification-cli",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "量化交易命令行工具",
   "main": "./dist/cli.js",
   "bin": {
@@ -12,7 +12,7 @@
   },
   "scripts": {
     "prepublish": "npm run build",
-    "build": "rimraf dist & tsc & chmod +x ./dist/cli.js",
+    "build": "rimraf dist && tsc && chmod +x ./dist/cli.js",
     "test": "ts-node ./cli"
   },
   "author": "marsoln1988@gmail.com",

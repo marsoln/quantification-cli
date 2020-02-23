@@ -75,7 +75,7 @@ export default async function() {
         futureBuybacksByYears.push({
           ['Year']: counter,
           ['MarketValue']: MarketValue.fmt(),
-          ['PE']: (MarketValue / buybackCostPerYear / incomeBuybackRatio).fmt(),
+          ['PE']: (MarketValue / (buybackCostPerYear / incomeBuybackRatio)).fmt(),
           ['BuypackPrice']: reasonablePrice.fmt(),
           ['BuybackAmount']: futureAmountBuyback.fmt(),
           ['MarketTotal']: futureAmountLeft.fmt(),

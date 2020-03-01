@@ -6,6 +6,7 @@ import { createPromptModule } from 'inquirer'
 
 import update from './src/update'
 import calcPe from './src/calcPe'
+import graham from './src/graham'
 import netGrid from './src/netGrid'
 import arbitrage from './src/arbitrage'
 
@@ -16,6 +17,7 @@ const exit = () => {
 
 const commands = {
   回购模型价格变动: calcPe,
+  格雷厄姆价值计算: graham,
   网格下单策略: netGrid,
   期货套利计算: arbitrage,
   检查更新: update,

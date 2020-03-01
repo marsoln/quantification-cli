@@ -1,37 +1,37 @@
 import { createPromptModule } from 'inquirer'
+import { grahamValue } from './graham'
 
 export default async function() {
   const {
-    priceBuyBackAvg,
-    amountBuyback,
+    buybackValue,
+    currentPrice,
     amountLeft,
     incomeBuybackRatio,
     buybackTimesOfYear,
     valueGrowthOfYear,
-    displayPeriod,
   } = await createPromptModule()([
     {
       type: 'input',
-      name: 'priceBuyBackAvg',
-      message: '输入回购平均价格',
-      default: 3,
+      name: 'buybackValue',
+      message: '回购费用',
+      default: 1206,
     },
     {
       type: 'input',
-      name: 'amountBuyback',
-      message: '输入本次回购数量',
-      default: 405,
+      name: 'currentPrice',
+      message: '当前价格',
+      default: 5.2,
     },
     {
       type: 'input',
       name: 'amountLeft',
       message: '剩余数量',
-      default: 45500,
+      default: 30674,
     },
     {
       type: 'input',
       name: 'incomeBuybackRatio',
-      message: '收入回购比例',
+      message: '回购比例',
       default: 0.2,
     },
     {
@@ -46,74 +46,52 @@ export default async function() {
       message: '每年市值增速(%)',
       default: 5,
     },
-    {
-      type: 'list',
-      name: 'displayPeriod',
-      message: '按年/月展示？',
-      default: 'Year',
-      choices: ['Year', 'Month'],
-    },
   ])
 
-  if (priceBuyBackAvg && amountBuyback && amountLeft) {
+  if (buybackValue && currentPrice && amountLeft) {
     // 回购金额
-    const buybackCostPerYear =
-      priceBuyBackAvg * amountBuyback * buybackTimesOfYear
+    const buybackCostPerYear = buybackValue * buybackTimesOfYear
 
-    // 市值
-    let MarketValue = priceBuyBackAvg * +amountLeft
+    let annualIncome = buybackCostPerYear / incomeBuybackRatio
     let futureAmountLeft = +amountLeft
-    let futureAmountBuyback = +amountBuyback
-
+    let MarketValue = currentPrice * +amountLeft
     let counter = 0
 
-    if (displayPeriod === 'Year') {
-      const futureBuybacksByYears = []
-      do {
-        const reasonablePrice = MarketValue / futureAmountLeft
-        futureAmountBuyback = buybackCostPerYear / reasonablePrice
-        futureBuybacksByYears.push({
-          ['Year']: counter,
-          ['MarketValue']: MarketValue.fmt(),
-          ['PE']: (MarketValue / (buybackCostPerYear / incomeBuybackRatio)).fmt(),
-          ['BuypackPrice']: reasonablePrice.fmt(),
-          ['BuybackAmount']: futureAmountBuyback.fmt(),
-          ['MarketTotal']: futureAmountLeft.fmt(),
-          ['PriceRiseRatio']:
-            ((reasonablePrice / priceBuyBackAvg - 1) * 100).fmt() + '%',
-        })
-        futureAmountLeft -= futureAmountBuyback
-        MarketValue *= 1 + +valueGrowthOfYear / 100
-      } while (++counter && futureAmountLeft > 1000 && counter <= 50)
-      console.table(futureBuybacksByYears)
-    } else {
-      const futureBuybacksByMonths = {}
-      do {
-        const reasonablePrice = MarketValue / futureAmountLeft
-        futureAmountBuyback =
-          buybackCostPerYear / reasonablePrice / buybackTimesOfYear
-        const year = Math.ceil((counter + 1) / buybackTimesOfYear)
+    const PE = MarketValue / annualIncome
+    const futureBuybacksByYears = []
 
-        if (!futureBuybacksByMonths[year]) {
-          futureBuybacksByMonths[year] = []
-        }
+    do {
+      const {
+        profitPerStock,
+        profitAfterSevenYears,
+        valuePerStock,
+      } = grahamValue(
+        annualIncome,
+        1,
+        futureAmountLeft,
+        valueGrowthOfYear,
+        valueGrowthOfYear,
+      )
+      const reasonablePrice = MarketValue / futureAmountLeft
+      const amountBB = buybackCostPerYear / reasonablePrice
+      futureBuybacksByYears.push({
+        MarketValue: MarketValue.fmt(),
+        Price: reasonablePrice.fmt(),
+        Profit: profitPerStock.fmt(),
+        PE: PE.fmt(),
+        BuybackAmount: amountBB.fmt(),
+        StockLeft: futureAmountLeft.fmt(),
+        PriceRiseRatio:
+          ((reasonablePrice / currentPrice - 1) * 100).fmt() + '%',
+        GrahamPAS: profitAfterSevenYears.fmt(),
+        GrahamVPS: valuePerStock.fmt(),
+      })
+      futureAmountLeft -= amountBB
+      MarketValue *= 1 + +valueGrowthOfYear / 100
+      annualIncome *= 1 + +valueGrowthOfYear / 100
+    } while (++counter && futureAmountLeft > 1000 && counter <= 50)
 
-        futureBuybacksByMonths[year].push({
-          ['Year']: year,
-          ['PeriodOfYear']: (counter % buybackTimesOfYear) + 1,
-          ['MarketValue']: MarketValue.fmt(),
-          ['PE']: (MarketValue / buybackCostPerYear / incomeBuybackRatio).fmt(),
-          ['BuypackPrice']: reasonablePrice.fmt(),
-          ['BuybackAmount']: futureAmountBuyback.fmt(),
-          ['MarketTotal']: futureAmountLeft.fmt(),
-          ['PriceRiseRatio']:
-            ((reasonablePrice / priceBuyBackAvg - 1) * 100).fmt() + '%',
-        })
-        MarketValue *= 1 + +valueGrowthOfYear / 100 / buybackTimesOfYear
-        futureAmountLeft -= futureAmountBuyback
-      } while (++counter && futureAmountLeft > 1000 && counter <= 50) // 剩余小于 1000 万时退出
-      Object.values(futureBuybacksByMonths).forEach(data => console.table(data))
-    }
+    console.table(futureBuybacksByYears)
   } else {
     console.warn(`参数错误 ❌`)
   }

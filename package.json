@@ -1,6 +1,6 @@
 {
   "name": "qtf-cli",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "量化交易命令行工具",
   "main": "./dist/cli.js",
   "bin": {

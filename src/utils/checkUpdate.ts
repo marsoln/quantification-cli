@@ -16,5 +16,5 @@ export default async function checkUpdate() {
   }
   console.log(title)
 
-  return shouldUpdate
+  return [shouldUpdate, latest]
 }

@@ -1,6 +1,15 @@
 import { createPromptModule } from 'inquirer'
 import { grahamValue } from './graham'
 
+let defaultVals = {
+  buybackValue: 1206,
+  currentPrice: 4.7,
+  amountLeft: 30674,
+  incomeBuybackRatio: 1,
+  buybackTimesOfYear: 12,
+  valueGrowthOfYear: 5,
+}
+
 export default async function() {
   const {
     buybackValue,
@@ -14,41 +23,50 @@ export default async function() {
       type: 'input',
       name: 'buybackValue',
       message: '回购费用',
-      default: 1206,
+      default: defaultVals.buybackValue,
     },
     {
       type: 'input',
       name: 'currentPrice',
       message: '当前价格',
-      default: 5.2,
+      default: defaultVals.currentPrice,
     },
     {
       type: 'input',
       name: 'amountLeft',
       message: '剩余数量',
-      default: 30674,
+      default: defaultVals.amountLeft,
     },
     {
       type: 'input',
       name: 'incomeBuybackRatio',
       message: '回购比例',
-      default: 0.2,
+      default: defaultVals.incomeBuybackRatio,
     },
     {
       type: 'input',
       name: 'buybackTimesOfYear',
       message: '每年回购次数',
-      default: 12,
+      default: defaultVals.buybackTimesOfYear,
     },
     {
       type: 'input',
       name: 'valueGrowthOfYear',
       message: '每年市值增速(%)',
-      default: 5,
+      default: defaultVals.valueGrowthOfYear,
     },
   ])
 
   if (buybackValue && currentPrice && amountLeft) {
+    defaultVals = {
+      buybackValue,
+      currentPrice,
+      amountLeft,
+      incomeBuybackRatio,
+      buybackTimesOfYear,
+      valueGrowthOfYear,
+    }
+
     // 回购金额
     const buybackCostPerYear = buybackValue * buybackTimesOfYear
 

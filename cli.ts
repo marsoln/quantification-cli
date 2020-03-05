@@ -3,6 +3,7 @@
 import './src/utils/polyfill'
 
 import { createPromptModule } from 'inquirer'
+import { version } from './package.json'
 
 import update from './src/update'
 import calcPe from './src/calcPe'
@@ -32,7 +33,7 @@ async function main() {
       {
         type: 'list',
         name: 'cmd',
-        message: '选择要执行的模块:',
+        message: `qtf-cli @${version}\n选择要执行的模块:`,
         default: commandNames[0],
         choices: commandNames,
       },

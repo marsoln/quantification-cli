@@ -2,15 +2,15 @@ import { createPromptModule } from 'inquirer'
 import { grahamValue } from './graham'
 
 let defaultVals = {
-  buybackValue: 1206,
-  currentPrice: 4.7,
-  amountLeft: 30674,
+  buybackValue: 1819.58,
+  currentPrice: 3.2,
+  amountLeft: 30252.61,
   incomeBuybackRatio: 1,
   buybackTimesOfYear: 12,
   valueGrowthOfYear: 5,
 }
 
-export default async function() {
+export default async function () {
   const {
     buybackValue,
     currentPrice,
@@ -96,13 +96,14 @@ export default async function() {
         MarketValue: MarketValue.fmt(),
         Price: reasonablePrice.fmt(),
         Profit: profitPerStock.fmt(),
+        ROI: (100 / PE).fmt() + '%',
         PE: PE.fmt(),
         BuybackAmount: amountBB.fmt(),
         StockLeft: futureAmountLeft.fmt(),
         PriceRiseRatio:
           ((reasonablePrice / currentPrice - 1) * 100).fmt() + '%',
-        GrahamPAS: profitAfterSevenYears.fmt(),
-        GrahamVPS: valuePerStock.fmt(),
+        GrahamProfitAfter7Years: profitAfterSevenYears.fmt(),
+        GrahamValuePerStock: valuePerStock.fmt(),
       })
       futureAmountLeft -= amountBB
       MarketValue *= 1 + +valueGrowthOfYear / 100

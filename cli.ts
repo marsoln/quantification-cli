@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import './src/utils/polyfill'
+import { updateRuntimeConf } from './src/utils/runtimeConf'
 
 import { createPromptModule } from 'inquirer'
 import { version } from './package.json'
@@ -37,7 +38,7 @@ async function main() {
         default: commandNames[0],
         choices: commandNames,
       },
-    ]).then(t => t.cmd)
+    ]).then((t) => t.cmd)
     await commands[cmd]()
   } while (
     await createPromptModule()([
@@ -47,8 +48,19 @@ async function main() {
         message: '继续(Y)或者退出(N)?',
         default: true,
       },
-    ]).then(t => t.continue)
+    ]).then((t) => t.continue)
   )
 }
 
-main().finally(exit)
+console.log(`更新默认配置...`)
+
+updateRuntimeConf()
+  .then(() => {
+    console.log(`配置更新完毕！`)
+  })
+  .catch((ex) => {
+    console.log(`配置更新失败`, ex.message)
+  })
+  .finally(() => {
+    main().finally(exit)
+  })

@@ -1,14 +1,10 @@
 import { createPromptModule } from 'inquirer'
+
+import defaultConfig from './utils/runtimeConf'
+
 import { grahamValue } from './graham'
 
-let defaultVals = {
-  buybackValue: 1819.58,
-  currentPrice: 3.2,
-  amountLeft: 30252.61,
-  incomeBuybackRatio: 1,
-  buybackTimesOfYear: 12,
-  valueGrowthOfYear: 5,
-}
+let defaultVals = defaultConfig.calc
 
 export default async function () {
   const {

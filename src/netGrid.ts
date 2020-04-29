@@ -1,22 +1,13 @@
 import { createPromptModule } from 'inquirer'
 import { SerialQueue } from 'async-task-manager'
 
+import defaultConfig from './utils/runtimeConf'
+
 import getHuobiApis from './providers/huobiApi'
 
-let defaultVals = {
-  price: 3.68,
-  amount: 100,
-  rate: 35,
-  stages: 14,
-  min: 2,
-  symbol: '',
-  appKey: '',
-  appSecret: '',
-  skip: 0,
-  trim: 0,
-}
+let defaultVals = defaultConfig.netgrid
 
-export default async function() {
+export default async function () {
   const data = []
 
   const {
@@ -31,14 +22,14 @@ export default async function() {
       name: 'priceStart',
       message: '输入起始价格',
       default: defaultVals.price,
-      validate: v => +v > 0,
+      validate: (v) => +v > 0,
     },
     {
       type: 'input',
       name: 'amountStart',
       message: '输入起始购买数量',
       default: defaultVals.amount,
-      validate: v => +v > 0,
+      validate: (v) => +v > 0,
     },
     {
       type: 'input',
@@ -51,7 +42,7 @@ export default async function() {
       name: 'stages',
       message: '输入阶段数量?',
       default: defaultVals.stages,
-      validate: v => +v > 0,
+      validate: (v) => +v > 0,
     },
     {
       type: 'input',
@@ -130,35 +121,35 @@ export default async function() {
           name: 'symbol',
           message: '输入交易对',
           default: defaultVals.symbol,
-          validate: v => !!v,
+          validate: (v) => !!v,
         },
         {
           type: 'input',
           name: 'appKey',
           message: '输入 AppKey',
           default: defaultVals.appKey,
-          validate: v => !!v,
+          validate: (v) => !!v,
         },
         {
           type: 'password',
           name: 'appSecret',
           message: '输入 AppSecret',
           default: defaultVals.appSecret,
-          validate: v => !!v,
+          validate: (v) => !!v,
         },
         {
           type: 'input',
           name: 'skip',
           message: '跳过起始若干笔订单？',
           default: defaultVals.skip,
-          validate: v => +v >= 0,
+          validate: (v) => +v >= 0,
         },
         {
           type: 'input',
           name: 'trim',
           message: '跳过结尾若干笔订单？',
           default: defaultVals.trim,
-          validate: v => +v >= 0,
+          validate: (v) => +v >= 0,
         },
       ])
       defaultVals = { ...defaultVals, symbol, appKey, appSecret, skip, trim }
@@ -184,7 +175,7 @@ export default async function() {
         orderData.forEach(({ price, amount }) =>
           queue.add(() => huobiClient.buy_limit(symbol, amount, price)),
         )
-        await queue.consume().catch(err => console.log(`下单失败`, err))
+        await queue.consume().catch((err) => console.log(`下单失败`, err))
       }
     }
   }

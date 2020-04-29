@@ -1,0 +1,22 @@
+{
+  "calc": {
+    "buybackValue": 15473600,
+    "currentPrice": 4,
+    "amountLeft": 297694892.97192115,
+    "incomeBuybackRatio": 1,
+    "buybackTimesOfYear": 12,
+    "valueGrowthOfYear": 5
+  },
+  "netgrid": {
+    "price": 3.68,
+    "amount": 100,
+    "rate": 35,
+    "stages": 14,
+    "min": 2,
+    "symbol": "",
+    "appKey": "",
+    "appSecret": "",
+    "skip": 0,
+    "trim": 0
+  }
+}

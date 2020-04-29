@@ -1,13 +1,12 @@
 import { createPromptModule } from 'inquirer'
 import { SerialQueue } from 'async-task-manager'
 
-import defaultConfig from './utils/runtimeConf'
+import { getConfig } from './utils/runtimeConf'
 
 import getHuobiApis from './providers/huobiApi'
 
-let defaultVals = defaultConfig.netgrid
-
 export default async function () {
+  let defaultVals = getConfig('netgrid')
   const data = []
 
   const {

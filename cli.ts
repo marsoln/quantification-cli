@@ -52,14 +52,9 @@ async function main() {
   )
 }
 
-console.log(`更新默认配置...`)
-
 updateRuntimeConf()
-  .then(() => {
-    console.log(`配置更新完毕！`)
-  })
   .catch((ex) => {
-    console.log(`配置更新失败`, ex.message)
+    console.error(`配置更新失败`, ex.message)
   })
   .finally(() => {
     main().finally(exit)

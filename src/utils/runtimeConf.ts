@@ -1,6 +1,8 @@
 import { configUrl } from '../../package.json'
 import { get } from './fetch'
 
+export type configTypes = 'calc' | 'netgrid'
+
 let defaultConfig = {
   calc: {
     buybackValue: 1819.58,
@@ -25,11 +27,15 @@ let defaultConfig = {
 }
 
 export async function updateRuntimeConf() {
+  console.log(`更新默认配置...`)
   return get(configUrl).then((config) => {
     if (config) {
       defaultConfig = config
     }
+    console.log(`配置更新完毕！`)
   })
 }
 
-export default defaultConfig
+export function getConfig(type: configTypes) {
+  return defaultConfig[type] || ({} as { [key: string]: any })
+}

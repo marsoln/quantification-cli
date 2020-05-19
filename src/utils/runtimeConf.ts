@@ -5,9 +5,9 @@ export type configTypes = 'calc' | 'netgrid'
 
 let defaultConfig = {
   calc: {
-    buybackValue: 1819.58,
-    currentPrice: 3.2,
-    amountLeft: 30252.61,
+    buybackValue: 1244.8,
+    currentPrice: 4.1,
+    amountLeft: 29441.34,
     incomeBuybackRatio: 1,
     buybackTimesOfYear: 12,
     valueGrowthOfYear: 5,

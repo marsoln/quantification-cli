@@ -1,8 +1,8 @@
 {
   "calc": {
-    "buybackValue": 1244.8,
-    "currentPrice": 4.1,
-    "amountLeft": 29441.34,
+    "buybackValue": 1368,
+    "currentPrice": 4.23,
+    "amountLeft": 20901.24,
     "incomeBuybackRatio": 1,
     "buybackTimesOfYear": 12,
     "valueGrowthOfYear": 5

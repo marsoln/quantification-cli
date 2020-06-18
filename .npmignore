@@ -21,4 +21,4 @@ src/
 cli.ts
 
 # config file
-config.json
+./config.json

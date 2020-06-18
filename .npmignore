@@ -1,13 +1,24 @@
+# IDE config
 .editorconfig
 
+# packages
 node_modules/
 
+# git files
 .git/
 .gitignore
+
+# prettier config
 .prettierrc
 
+# typescript config
 tsconfig.json
 
+# source code
 src/
 
+# entry file
 cli.ts
+
+# config file
+config.json

@@ -1,39 +1,29 @@
+import { writeFileSync } from 'fs'
+import { resolve } from 'path'
+
+import * as config from '../../config.json'
 import { configUrl } from '../../package.json'
+
 import { get } from './fetch'
 
 export type configTypes = 'calc' | 'netgrid'
 
-let defaultConfig = {
-  calc: {
-    buybackValue: 1244.8,
-    currentPrice: 4.1,
-    amountLeft: 29441.34,
-    incomeBuybackRatio: 1,
-    buybackTimesOfYear: 12,
-    valueGrowthOfYear: 5,
-  },
-  netgrid: {
-    price: 3.68,
-    amount: 100,
-    rate: 35,
-    stages: 14,
-    min: 2,
-    symbol: '',
-    appKey: '',
-    appSecret: '',
-    skip: 0,
-    trim: 0,
-  },
-}
+let defaultConfig = config
 
 export async function updateRuntimeConf() {
-  console.log(`更新默认配置...`)
-  return get(configUrl).then((config) => {
-    if (config) {
-      defaultConfig = config
-    }
-    console.log(`配置更新完毕！`)
-  })
+  return get(configUrl)
+    .then((newConf) => {
+      if (newConf) {
+        defaultConfig = newConf
+        writeFileSync(
+          resolve(__dirname, '../../config.json'),
+          JSON.stringify(newConf),
+        )
+      }
+    })
+    .catch(() => {
+      // ignore
+    })
 }
 
 export function getConfig(type: configTypes) {

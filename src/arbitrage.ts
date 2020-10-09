@@ -1,7 +1,12 @@
 import { createPromptModule } from 'inquirer'
 
-export default async function() {
-  const { spotPrice, futurePrice, closing } = await createPromptModule()([
+export default async function () {
+  const {
+    spotPrice,
+    futurePrice,
+    leverage,
+    closing,
+  } = await createPromptModule()([
     {
       type: 'input',
       name: 'spotPrice',
@@ -11,6 +16,12 @@ export default async function() {
       type: 'input',
       name: 'futurePrice',
       message: '期货价格',
+    },
+    {
+      type: 'input',
+      name: 'leverage',
+      message: '杠杆率',
+      default: 0.5,
     },
     {
       type: 'input',
@@ -25,12 +36,12 @@ export default async function() {
     const priceDiff = futurePrice - spotPrice
     const priceDiffAbs = Math.abs(priceDiff)
     const closingYearRatio = closing / daysOfYear
-    const roiPct = ((priceDiffAbs / spotPrice) * 100) / 2
-    const roiPctOfYear = roiPct / closingYearRatio
+    const ROI = (((priceDiffAbs / spotPrice) * 100) / 2) * (1 + leverage)
+    const APY = ROI / closingYearRatio
     console.table([
       {
-        ReturnOfInv: roiPct.fmt() + '%',
-        ReturnOfInvByYear: roiPctOfYear.fmt() + '%',
+        ROI: ROI.fmt() + '%',
+        APY: APY.fmt() + '%',
       },
     ])
   } else {

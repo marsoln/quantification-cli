@@ -11,6 +11,7 @@ import calcPe from './src/calcPe'
 import graham from './src/graham'
 import netGrid from './src/netGrid'
 import arbitrage from './src/arbitrage'
+import autoInv from './src/autoInv'
 
 const exit = () => {
   console.log('结束退出...')
@@ -22,6 +23,7 @@ const commands = {
   格雷厄姆价值计算: graham,
   网格下单策略: netGrid,
   期货套利计算: arbitrage,
+  复利定投: autoInv,
   检查更新: update,
   退出: exit,
 }

@@ -2,7 +2,7 @@ import checkUpdate from './utils/checkUpdate'
 import { execSync } from 'child_process'
 import { name } from '../package.json'
 
-export default () =>
+const update = () =>
   checkUpdate()
     .then(([shouldUpdate, version]) => {
       if (shouldUpdate) {
@@ -16,3 +16,5 @@ export default () =>
     .catch((err) => {
       console.error(err)
     })
+
+export default update
